@@ -11,7 +11,7 @@
 					</li>
 					<template v-if="isLoggedIn">
 						<li class="nav-item">
-							<router-link class="nav-link" :to="{name: 'globalFeed'}" active-class="active">
+							<router-link class="nav-link" :to="{name: 'createArticle'}" active-class="active">
 								<i class="ion-compose"></i> &nbsp;NewArticle
 							</router-link>
 						</li>
@@ -23,7 +23,6 @@
 						<li class="nav-item">
 							<router-link class="nav-link" :to="{ name: 'globalFeed', params: {slug: currentUser.username}}" active-class="active">
 								<img class="user-pic" alt="avatar" :src="currentUser.image">
-								&nbsp;
 								{{ currentUser.username }}
 							</router-link>
 						</li>
