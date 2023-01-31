@@ -19,7 +19,7 @@
             </div>
 
               <!-- If current user is the author, show edit/delete buttons -->
-            <span v-if = 'true'>
+            <span v-if = 'isAuthor'>
 
               <router-link class = "btn btn-outline-secondary btn-sm" :to =
                   "{name: 'editArticle', params: {slug: article.slug}}">
@@ -27,7 +27,8 @@
                 Edit Article
               </router-link>
 
-              <button class = "btn btn-outline-danger btn-sm" :class = "{disabled: false}">
+              <button class = "btn btn-outline-danger btn-sm" :class = "{disabled: false}"
+                      @click='deleteArticle'>
                 <i class = "ion-trash-a"></i>
                 Delete Article
               </button>
@@ -35,7 +36,7 @@
             </span>
 
               <!-- Otherwise, show favorite & follow buttons -->
-            <span v-if = 'true'>
+            <span v-if = '!isAuthor'>
               <button
                 class = "btn btn-sm action-btn ng-binding btn-outline-secondary"
                 :class = "{ 'disabled': false,
@@ -75,15 +76,8 @@
             <div>
                 <p>{{ article.body }} </p>
             </div>
-//TAG LIST
-            <ul class = "tag-list">
-              <li
-                  class = "tag-default tag-pill tag-outline ng-binding ng-scope"
-                  v-for="tag in article.tagList" :key='tag'
-              >
-                {{ tag }}
-              </li>
-            </ul>
+
+            <mcv-tag-list :tags='article.tagList'/>
 
           </div>
         </div>
@@ -198,17 +192,30 @@
 </template>
 
 <script>
-import {actionTypes} from '@/store/modules/article';
-import {mapState} from 'vuex';
+import {actionTypes as articleActionTypes} from '@/store/modules/article';
+import {getterTypes as authGetterTypes} from '@/store/modules/auth';
+import {mapState, mapGetters} from 'vuex';
 import McvLoading from '@/components/Loading';
 import McvErrorMessage from '@/components/ErrorMessage';
+import McvTagList from '@/components/TagList'
 
 export default {
   name: 'McvArticle',
 
   components: {
     McvErrorMessage,
-    McvLoading
+    McvLoading,
+    McvTagList,
+  },
+
+  methods: {
+    deleteArticle() {
+      console.log("Delete Article")
+      this.$store.dispatch(articleActionTypes.deleteArticle, {slug: this.$route.params.slug})
+          .then(() =>{
+            this.$router.push({name: 'yourFeed'})
+          })
+    }
   },
 
   computed: {
@@ -216,11 +223,20 @@ export default {
       isLoading: state => state.article.isLoading,
       article: state => state.article.data,
       error: state => state.article.error,
-    })
+    }),
+    ...mapGetters({
+      currentUser: authGetterTypes.currentUser
+    }),
+    isAuthor() {
+      if (!this.currentUser || !this.article) {
+        return false;
+      }
+      return this.currentUser.username === this.article.author.username
+    }
   },
 
   mounted() {
-    this.$store.dispatch(actionTypes.getArticle, {slug: this.$route.params.slug});
+    this.$store.dispatch(articleActionTypes.getArticle, {slug: this.$route.params.slug});
   }
 };
 </script>
