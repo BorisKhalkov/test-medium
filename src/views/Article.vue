@@ -210,7 +210,6 @@ export default {
 
   methods: {
     deleteArticle() {
-      console.log("Delete Article")
       this.$store.dispatch(articleActionTypes.deleteArticle, {slug: this.$route.params.slug})
           .then(() =>{
             this.$router.push({name: 'yourFeed'})
