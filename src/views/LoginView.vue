@@ -5,7 +5,7 @@
         <div class="col-md-6 offset-md-3 col-xs-12">
           <h1 class="text-xs-center">Login</h1>
           <p class="text-xs-center">
-            <router-link :to="{ name: 'register' }">Зарегистрироваться?</router-link>
+            <router-link :to="{ name: 'register' }"> Sign Up </router-link>
           </p>
 
           <mcv-validation-errors v-if="validationErrors" :validation-errors="validationErrors" />
@@ -17,7 +17,8 @@
             <fieldset class="form-group">
               <input class="form-control form-control-lg" autocomplete="current-password" placeholder="Пароль" type="password" v-model="password">
             </fieldset>
-            <button class="btn btn-lg btn-primary pull-xs-right" :disabled="isSubmitting"> Войти </button>
+            <button class="btn btn-lg btn-primary pull-xs-right" :disabled="isSubmitting"> Sign In
+            </button>
           </form>
         </div>
       </div>

@@ -18,9 +18,7 @@
               <span class = "date">{{ article.createdAt }}</span>
             </div>
 
-              <!-- If current user is the author, show edit/delete buttons -->
             <span v-if = 'isAuthor'>
-
               <router-link class = "btn btn-outline-secondary btn-sm" :to =
                   "{name: 'editArticle', params: {slug: article.slug}}">
                 <i class = "ion-edit"></i>
@@ -32,10 +30,8 @@
                 <i class = "ion-trash-a"></i>
                 Delete Article
               </button>
-
             </span>
 
-              <!-- Otherwise, show favorite & follow buttons -->
             <span v-if = '!isAuthor'>
               <button
                 class = "btn btn-sm action-btn ng-binding btn-outline-secondary"
@@ -43,7 +39,7 @@
                             'btn-outline-secondary': false,
                             'btn-secondary': false }"
               >
-                <i class = "ion-plus-round"></i>&nbsp;Follow Anah Benešová
+                <i class = "ion-plus-round"></i>&nbsp;Follow {{ article.author.username }}
               </button>
 
               <button
@@ -55,7 +51,7 @@
 
                 <i class = "ion-heart"></i>
                 <span>Favorite Article</span>
-                <span class = "counter">(143)</span>
+                <span class = "counter">({{ article.favoritesCount }})</span>
 
               </button>
             </span>
@@ -65,7 +61,6 @@
     </div>
 
 
-    <!-- Main view. Contains article html and comments -->
     <div class = "container page">
       <mcv-loading v-if='isLoading' />
       <mcv-error-message v-if='error' :message='error' />
@@ -74,7 +69,7 @@
         <div class = "row article-content">
           <div class = "col-xs-12">
             <div>
-                <p>{{ article.body }} </p>
+                <p>{{ article.body }}</p>
             </div>
 
             <mcv-tag-list :tags='article.tagList'/>
@@ -82,6 +77,7 @@
           </div>
         </div>
 
+<!--        Перенести в отдельный компонент-->
         <hr>
 
         <div class = "article-actions">
@@ -103,7 +99,7 @@
                 </div>
 
                   <!-- If current user is the author, show edit/delete buttons -->
-                  <span v-if = "true">
+                  <span v-if = "isAuthor">
                     <router-link
                         class = "btn btn-outline-secondary btn-sm"
                         :to="{name: 'editArticle'}"
@@ -111,13 +107,15 @@
                     </router-link>
 
                     <button
-                        class = "btn btn-outline-danger btn-sm" :class="{disabled: false}"
+                        class = "btn btn-outline-danger btn-sm"
+                        :class="{disabled: false}"
+                        @click='deleteArticle'
                     ><i class = "ion-trash-a"></i> Delete Article
                     </button>
                   </span>
 
                   <!-- Otherwise, show favorite & follow buttons -->
-                  <span>
+                  <span v-else>
                     <button
                       class = "btn btn-sm action-btn btn-outline-secondary"
                       :class="{ 'disabled': false,
@@ -145,26 +143,23 @@
         </div>
 
         <!-- Comments section -->
-        <div class = "row">
+        <div class = "row" v-if='currentUser'>
           <div class = "col-xs-12 col-md-8 offset-md-2">
 
-            <div v-if="true">
-              <ul class = "error-messages ng-hide" v-if="error">
-                <!-- ngRepeat: (field, errors) in $ctrl.errors -->
-              </ul>
+            <div v-if="article">
               <form class = "card comment-form">
                 <div class = "card-block">
                   <textarea
                       class = "form-control"
-                      placeholder = "Write a comment..." rows = "3"
-                  >
-                  </textarea>
+                      placeholder = "Write a comment..."
+                      rows = "3"
+                  ></textarea>
                 </div>
 
                 <div class = "card-footer">
                   <img
                       class = "comment-author-img"
-                      :src = "article.author.image"
+                      :src = "currentUser.image"
                       alt='author image'
                   >
                   <button class = "btn btn-sm btn-primary" type = "submit">
@@ -174,7 +169,7 @@
               </form>
             </div>
 
-            <p v-if="false">
+            <p v-if="!currentUser">
               <router-link :to = "{name: 'login'}">
                 Sign in
               </router-link>
